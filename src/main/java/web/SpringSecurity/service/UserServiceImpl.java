@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import web.SpringSecurity.model.Role;
 import web.SpringSecurity.model.User;
 import web.SpringSecurity.repositories.UsersRepository;
@@ -28,23 +29,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
 
-    public List<User> listUsers() {
+    public List<User> getAllUsers() { // listUsers
         return repository.findAll();
     }
 
     @Override
 
-    public User userById(Long id) {
+    public User getUserById(Long id) {
         return repository.findById(id).get();
     }
 
+    @Transactional // добавила
     @Override
-    public void save(User user) {
+    public void saveUser(User user) {
         repository.save(user);
     }
 
     @Override
-    public void create(User user) {
+    public void createNewUser(User user) {
         user.setPassword(PasswordEncoder().encode(user.getPassword()));
         user.addRole(Role.USER);
         repository.save(user);
@@ -58,11 +60,13 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Transactional // добавила
     @Override
-    public void delete(Long id) {
+    public void deleteUser(Long id) {
         repository.deleteById(id);
     }
 
+    @Transactional // добавила
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username);
